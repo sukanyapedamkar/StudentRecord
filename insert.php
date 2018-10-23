@@ -1,27 +1,27 @@
 <?php
-include "connectdb.php";
-$data=json_decode(file_get_contents("php://input"));
+	include "connectdb.php";
+	$data=json_decode(file_get_contents("php://input"));
 
-$btnName=$dbhandle->real_escape_string($data->btnName);
-if($btnName=='Insert'){
+	$btnName=$dbhandle->real_escape_string($data->btnName);
+	if($btnName=='Insert'){
 
-$id=$dbhandle->real_escape_string($data->id);
-$name=$dbhandle->real_escape_string($data->name);
+		$id=$dbhandle->real_escape_string($data->id);
+		$name=$dbhandle->real_escape_string($data->name);
 
-$query="INSERT INTO student VALUES($id,'".$name."')";
+		$query="INSERT INTO student VALUES($id,'".$name."')";
 
-$dbhandle->query($query);
+		$dbhandle->query($query);
 	}
 
 	else {
 
 		$id=$dbhandle->real_escape_string($data->id);
-       $name=$dbhandle->real_escape_string($data->name);
+
+		$name=$dbhandle->real_escape_string($data->name);
+
        	$query="UPDATE student SET studname = '".$name."' WHERE studid=$id ";
+       	
        	$dbhandle->query($query);
-
-
-
 	}
 
 ?>

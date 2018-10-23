@@ -1,96 +1,129 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="UTF-8">
-    <title>Angular JS CRUD OPERATIONS</title>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-    <style type="text/css">
-    form {
-        padding: 2em;
-        background-color: gainsboro;
-        margin: 5% auto;
-    }
-    </style>
-</head>
+		<meta charset="UTF-8">
+		<title>Student Detail Form AngularJs</title>
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+		<style type="text/css">
+			form{
+				padding: 2em;
+    			background-color: #EAF2F8;
+    			margin: 5% auto;
+    			border: 1px solid #1F618D;
+			}
 
+			input[type=number]::-webkit-inner-spin-button, 
+			input[type=number]::-webkit-outer-spin-button { 
+			  -webkit-appearance: none; 
+			  margin: 0; 
+			}
+			.btn{
+				background: #ffffff;
+			}
+			.btn-primary{
+				border-color: #1F618D;
+				color: #1F618D;
+			}
+			.btn-warning{
+				border-color: #D4AC0D;
+				color: #D4AC0D;
+			}
+			.btn-danger{
+				border-color: #C0392B;
+				color:#C0392B;
+			}
+		</style>
+	</head>
 <body>
-    <div class="container">
-        <div ng-app="myApp" ng-controller="cntrl">
-            <form name="myForm" novalidate>
-                <div class="form-group">Student Id:<br>
-                    <input type="number" class="form-control" max-length="2" name="id" ng-model="id" required>
-                    <span style="color:red" ng-show="myForm.id.$dirty && myForm.id.$invalid">
-					<span ng-show="myForm.id.$error.required" >ID is required.</span>
-                    </span>
-                </div>
-                <div class="form-group">Student Name:<br>
-                    <input type="text" class="form-control" name="name" ng-model="name" required>
-                    <span style="color:red" ng-show="myForm.name.$dirty && myForm.name.$invalid">
-					<span ng-show="myForm.name.$error.required">Name is required.</span>
-                    </span>
-                </div>
-                <div class="form-group">
-                    <button type="submit" ng-disabled="myForm.id.$dirty && myForm.id.$invalid || myForm.name.$dirty && myForm.name.$invalid" value="insert" ng-click="insertdata()">Insert</button>
-                </div>
-            </form>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="student in data">
-                        <td>{{student.studid}}</td>
-                        <td>{{student.studname}}</td>
-                        <td><button ng-click="deleteStud(student.studid);" class="btn">Delete</button></td>
-                        <td><button ng-click="editStud(student.studid, student.studname);" class="btn">Edit</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script>
-    var app = angular.module('myApp', []);
-    app.controller('cntrl', function($scope, $http) {
-        $scope.obj = { 'idisable': false };
-        $scope.btnName = "Insert";
+	<div class="container">
+		<div ng-app="myApp" ng-controller="cntrl" class="row">
+			<h1>Student Detail Form</h1>
+			<div class="col-md-6">
+				<form name="myForm" novalidate>
+					<div class="form-group">Student Id:<br>
+						<input type="number" class="form-control" min="1" max="999" name="id" ng-model="id" required>
+						<span style="color:red" ng-show="myForm.id.$dirty && myForm.id.$invalid">
+							<span ng-show="myForm.id.$error.required" >ID is required.</span>
+							<span ng-show="myForm.id.$error.number">Input only numbers between 1 to 999</span>
+						</span>
+					</div>
+					<div class="form-group">Student Name:<br>
+						<input type="text" class="form-control" name="name" ng-model="name" required>
+						<span style="color:red" ng-show="myForm.name.$dirty && myForm.name.$invalid">
+							<span ng-show="myForm.name.$error.required">Name is required.</span>
+							<span ng-show="myForm.id.$error.text" >Input only alphabets</span>
+						</span>
+					</div>
+					<div class="form-group">
+						<button type="submit"  value="insert" ng-click="insertdata()" class="btn btn-primary" ng-disabled="myForm.id.$dirty && myForm.id.$invalid || myForm.name.$dirty && myForm.name.$invalid">Insert</button>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-6" ng-init="displayStud()">
+				<table class="table table-responsive">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Edit</th>
+							<th>Remove</th>
+						</tr>	
+					</thead>
+					<tbody>
+						<tr ng-repeat="x in data">
+							<td>{{x.studid}}</td>
+							<td>{{x.studname}}</td>
+							<td><button ng-click="editStud(x.studid, x.studname);" class="btn btn-warning">Edit</button></td>
+							<td><button ng-click="deleteStud(x.studid);" class="btn btn-danger">Delete</button></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 
-        $scope.insertdata = function() {
-            $scope.displayStud();
-            $http.post("insert.php", { 'id': $scope.id, 'name': $scope.name, 'btnName': $scope.btnName })
-                .success(function() {
-                    $scope.msg = "Data Inserted";
-                    $scope.displayStud();
-                })
-        }
+	<script>
+	var app=angular.module('myApp',[]);
+	app.controller('cntrl', function($scope,$http){
+		$scope.obj={'idisable':false};
+		$scope.btnName="Insert";
+		$scope.displayStud=function(){
+			$http.get("select.php")
+			.success(function(data){
+				$scope.data=data
+			})
+		}
 
-        $scope.displayStud = function() {
-            $http.get("select.php")
-                .success(function(data) {
-                    $scope.data = data
-                })
-        }
-        $scope.deleteStud = function(studid) {
-            $http.post("delete.php", { 'id': studid })
-                .success(function() {
-                    $scope.msg = "Data Deletion successfull";
-                    $scope.displayStud();
-                })
-        }
+		
 
-        $scope.editStud = function(studid, studname) {
-            $scope.id = studid;
-            $scope.name = studname;
-            $scope.btnName = "Update";
-            $scope.obj.idisable = true;
-            $scope.displayStud();
-        }
-    });
-    </script>
+		$scope.insertdata=function(){
+			$scope.displayStud();
+			$http.post("insert.php",{'id':$scope.id, 'name':$scope.name, 'btnName':$scope.btnName})
+			.success(function(){
+				$scope.msg="Data Inserted";
+				$scope.displayStud();
+			})
+		}
+
+		
+		$scope.deleteStud=function(studid){
+			$http.post("delete.php",{'id':studid})
+			.success(function(){
+					$scope.msg="Data Deletion successfull";
+					$scope.displayStud();
+			})
+		}
+
+		$scope.editStud=function(studid, studname)
+		{
+			$scope.id=studid;
+			$scope.name=studname;
+			$scope.btnName="Update";
+			$scope.obj.idisable=true;
+			$scope.displayStud();
+		}
+	});
+	</script>
 </body>
-
 </html>
